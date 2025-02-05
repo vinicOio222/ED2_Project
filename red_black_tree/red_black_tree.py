@@ -132,11 +132,64 @@ class RedBlackTree:
                     self.left_rotation(new_node.grandparent())
         self.root.color = Color.BLACK
     
-    def find_min(self, node: Node):
-        pass
-
     def fix_delete(self, node: Node):
-        pass
+        while node != self.root and node.color == Color.BLACK:
+            if node == node.parent.left:
+                sibling = node.sibling()
+                if sibling.color == Color.RED:
+                    sibling.color = Color.BLACK
+                    node.parent.color = Color.RED
+                    self.left_rotation(node.parent)
+                    sibling = node.sibling()
+                if (sibling.left == self.NIL or sibling.left.color == Color.BLACK) and (sibling.right == self.NIL or sibling.right.color == Color.BLACK):
+                    sibling.color = Color.RED
+                    node = node.parent
+                else:
+                    if sibling.right == self.NIL or sibling.right.color == Color.BLACK:
+                        sibling.left.color = Color.BLACK
+                        sibling.color = Color.RED
+                        self.right_rotation(sibling)
+                        sibling = node.sibling()
+                    sibling.color = node.parent.color
+                    node.parent.color = Color.BLACK
+                    if sibling.right:
+                        sibling.right.color = Color.BLACK
+                    self.left_rotation(node.parent)
+                    node = self.root
+            else:
+                sibling = node.sibling()
+                if sibling.color == Color.RED:
+                    sibling.color = Color.BLACK
+                    node.parent.color = Color.RED
+                    self.right_rotation(node.parent)
+                    sibling = node.sibling()
+                if (sibling.left == self.NIL or sibling.left.color == Color.BLACK) and (sibling.right == self.NIL or sibling.right.color == Color.BLACK):
+                    sibling.color = Color.RED
+                    node = node.parent
+                else:
+                    if sibling.left == self.NIL or sibling.left.color == Color.BLACK:
+                        sibling.right.color = Color.BLACK
+                        sibling.color = Color.RED
+                        self.left_rotation(sibling)
+                        sibling = node.sibling()
+                    sibling.color = node.parent.color
+                    node.parent.color = Color.BLACK
+                    if sibling.left:
+                        sibling.left.color = Color.BLACK
+                    self.right_rotation(node.parent)
+                    node = self.root
+        node.color = Color.BLACK
+
+    def replace_node(self, old_node, new_node):
+        if old_node.parent == self.NIL:
+            self.root = new_node
+        else:
+            if old_node == old_node.parent.left:
+                old_node.parent.left = new_node
+            else:
+                old_node.parent.right = new_node
+        if new_node != self.NIL:
+            new_node.parent = old_node.parent
 
     #Q.1: Implement the insert, deleteVal and printInOrder methods for the Red-Black Tree
     def insert(self, key):
@@ -169,15 +222,40 @@ class RedBlackTree:
         self.fix_insert(new_node)
         
 
-    def deleteVal(self, key):
-        pass
+    def delete_val(self, key):
+        node_to_delete = self.find(key)
+        if node_to_delete == self.NIL:
+            return
+        
+        if node_to_delete.left == self.NIL or node_to_delete.right == self.NIL:
+            self.replace_node(node_to_delete, node_to_delete.left or node_to_delete.right)
+        else:
+            sucessor = self.find_min(node_to_delete.right)
+            node_to_delete.key = sucessor.key
+            self.replace_node(sucessor, sucessor.right)
+        
+        self.fix_delete(node_to_delete)
 
-    def printInOrder(self, node):
+    def print_in_order(self, node):
         if node != self.NIL:
-            self.printInOrder(node.left)
+            self.print_in_order(node.left)
             print(f"{node.key}({node.color.value})", end=" ")
-            self.printInOrder(node.right)
+            self.print_in_order(node.right)
 
+    #Q.2: Implement find(find a specific key), find_min(find the lowest key) and find_max(find the greatest key) methods
+    def find(self, key):
+        curr_node = self.root
+        while curr_node != self.NIL and curr_node.key != key:
+            if key < curr_node.key:
+                curr_node = curr_node.left
+            else:
+                curr_node = curr_node.right
+        return curr_node
+    
+    def find_min(self, node):
+        while node.left != self.NIL:
+            node = node.left
+        return node
 
 if __name__ == "__main__":
     tree = RedBlackTree()
@@ -187,8 +265,11 @@ if __name__ == "__main__":
     print("Inorder of the Red-Black Tree:\n")
     for key in keys:
         tree.insert(key)
-    tree.printInOrder(tree.root)
-    print("\n")    
+    tree.print_in_order(tree.root)
+    print("\n")
+    tree.delete_val(22)
+    tree.print_in_order(tree.root)
+
 
 
 
