@@ -14,6 +14,7 @@ class RedBlackTree:
             self.parent = None
             self.right = None
             self.left = None
+            self.subtree_size = 1
         
         def __str__(self):
             return f"{self.key} ({self.color.value})"
@@ -40,6 +41,7 @@ class RedBlackTree:
 
     def __init__(self):
         self.NIL = self.Node(None, Color.BLACK)
+        self.NIL.subtree_size = 0
         self.root = self.NIL
         self.NIL.parent = self.NIL
         self.NIL.left = self.NIL
@@ -75,6 +77,10 @@ class RedBlackTree:
         right_child.left = node
         node.parent = right_child
 
+        # Update subtree sizes after rotation
+        self.update_size(node)
+        self.update_size(right_child)
+
     def right_rotation(self, node: Node):
         #     x               y
         #    /               / \
@@ -98,6 +104,11 @@ class RedBlackTree:
 
         left_child.right = node
         node.parent = left_child
+
+        # Update subtree sizes after rotation
+        self.update_size(node)
+        self.update_size(left_child)
+
 
     def fix_insert(self, new_node: Node):
         # While there are two continuos red nodes, we need to fix the tree
@@ -132,6 +143,13 @@ class RedBlackTree:
                     new_node.parent.color = Color.BLACK
                     new_node.grandparent().color = Color.RED
                     self.left_rotation(new_node.grandparent())
+        
+        # Update size of the subtree after rotations
+        self.update_size(new_node)
+        self.update_size(new_node.parent)
+        if new_node.grandparent():
+            self.update_size(new_node.grandparent())
+        
         self.root.color = Color.BLACK
     
     def fix_delete(self, node: Node):
@@ -188,8 +206,17 @@ class RedBlackTree:
                     sibling.left.color = Color.BLACK
                     self.right_rotation(node.parent)
                     node = self.root
+
+            # Update subtree sizes after fixing deletion violations
+            self.update_size(node)
+            if node.parent != self.NIL:
+                self.update_size(node.parent)
+
         # Set the color of the node to black
         node.color = Color.BLACK
+
+        # Update the size of the root (since the structure might have changed)
+        self.update_size(self.root)
 
     def replace_node(self, old_node, new_node):
         if old_node.parent == self.NIL:
@@ -230,6 +257,11 @@ class RedBlackTree:
             # If the key of the new node is greater than or equal to the key of the parent node, the new node is the right child of the parent node
             parent_node.right = new_node
         self.fix_insert(new_node)
+
+        # update the size of the subtree
+        while parent_node != self.NIL:
+            self.update_size(parent_node)
+            parent_node = parent_node.parent
         
     def delete_val(self, key):
         """Removes the node with the specified key from the Red-Black Tree."""
@@ -263,9 +295,23 @@ class RedBlackTree:
             successor_node.left.parent = successor_node
             successor_node.color = node_to_delete.color
 
+        # Update subtree sizes from the deleted node upwards
+        parent = node_to_delete.parent
+        while parent != self.NIL:
+            self.update_size(parent)
+            parent = parent.parent
+
         if original_color == Color.BLACK:
             self.fix_delete(child_node)
 
+
+    # A helper function in order to keep track of the subtree size for the findKth function
+    def update_size(self, node):
+        if node != self.NIL:
+            node.subtree_size = (
+                (node.left.subtree_size if node.left != self.NIL else 0) +
+                (node.right.subtree_size if node.right != self.NIL else 0) + 1
+            )
 
     def print_in_order(self, node):
         if node != self.NIL:
@@ -294,6 +340,24 @@ class RedBlackTree:
         while node.right != self.NIL:
             node = node.right
         return node
+
+    #Q.3: Implement findKth(i), where i is the i-th smallest value of the tree
+    def find_kth(self, i):
+        def kth_helper(node, k):
+            if node == self.NIL:
+                return None  # k is out of bounds
+            
+            left_size = node.left.subtree_size if node.left != self.NIL else 0
+            
+            if k == left_size + 1:
+                return node  # Found the k-th smallest element
+            elif k <= left_size:
+                return kth_helper(node.left, k)  # Search in the left subtree
+            else:
+                return kth_helper(node.right, k - left_size - 1)  # Search in the right subtree
+
+        return kth_helper(self.root, i)
+
 
 if __name__ == "__main__":
     tree = RedBlackTree()
@@ -324,3 +388,10 @@ if __name__ == "__main__":
     tree.insert(33)
     tree.insert(50)
     tree.print_in_order(tree.root)
+
+
+    print("\n")
+    # Test findKth(i)
+    for i in range(1, 6):
+        kth_node = tree.find_kth(i)
+        print(f"{i}-th smallest key:", kth_node)
