@@ -358,6 +358,28 @@ class RedBlackTree:
 
         return kth_helper(self.root, i)
 
+    #Q.4: Implement a function that finds and shows the values between the interval of the 2 keys (low, high)
+    def find_interval(self, low, high):
+        def inorder_search(node):
+            if node == self.NIL:
+                return
+
+            # Traverse left subtree if there's a chance of finding values in range
+            if node.key > low:
+                inorder_search(node.left)
+
+            # Include current node if it's within range
+            if low <= node.key <= high:
+                print(f"{node.key}({node.color.value})", end=" ")
+
+            # Traverse right subtree if there's a chance of finding values in range
+            if node.key < high:
+                inorder_search(node.right)
+
+        print(f"\nElements in the interval [{low}, {high}]:", end=" ")
+        inorder_search(self.root)
+        print()
+
 
 if __name__ == "__main__":
     tree = RedBlackTree()
@@ -388,10 +410,11 @@ if __name__ == "__main__":
     tree.insert(33)
     tree.insert(50)
     tree.print_in_order(tree.root)
-
-
+    
     print("\n")
     # Test findKth(i)
     for i in range(1, 6):
         kth_node = tree.find_kth(i)
         print(f"{i}-th smallest key:", kth_node)
+
+    tree.find_interval(8, 30)
