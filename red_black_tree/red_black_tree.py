@@ -289,6 +289,11 @@ class RedBlackTree:
         while node.left != self.NIL:
             node = node.left
         return node
+    
+    def find_max(self, node):    
+        while node.right != self.NIL:
+            node = node.right
+        return node
 
 if __name__ == "__main__":
     tree = RedBlackTree()
@@ -303,6 +308,8 @@ if __name__ == "__main__":
     # 2. Search for the keys 22 and 15 in the Red-Black Tree
     print("Searching for key 22:", tree.find(22))
     print("Searching for key 15:", tree.find(15))
+    print("FindMin: ", tree.find_min(tree.root))
+    print("FindMax: ", tree.find_max(tree.root))
     print("\n")
     # 3. Delete the keys 30, 10, and 22 from the Red-Black Tree. Insert the keys 25, 9, 33 and 50
     print("Inorder of the Red-Black Tree after deleting keys 30, 10, and 22:")
