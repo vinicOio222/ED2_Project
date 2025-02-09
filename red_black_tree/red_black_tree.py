@@ -439,7 +439,7 @@ if __name__ == "__main__":
     # 5. Find and show the values between the interval of the 2 keys (10, 30)
     tree.find_interval(10, 30)
     print("\n")
-    
+
     # Print the Red-Black Tree
     print("Red-Black Tree:")
     tree.print_tree()
