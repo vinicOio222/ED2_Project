@@ -379,6 +379,26 @@ class RedBlackTree:
         print(f"\nElements in the interval [{low}, {high}]:", end=" ")
         inorder_search(self.root)
         print()
+    
+    #Q.5: Implement a function that prints the Red-Black Tree
+    def print_tree(self):
+        # Helper function to print the tree
+        def print_helper(node, indent, last):
+            if node != self.NIL:
+                print(indent, end="")
+                if last:
+                    # Subtree is the right child
+                    print("R----", end="")
+                    indent += "     "
+                else:
+                    # Subtree is the left child
+                    print("L----", end="")
+                    indent += "|    "
+                print(f"{node.key}({node.color.value})")
+                print_helper(node.left, indent, False)
+                print_helper(node.right, indent, True)
+
+        print_helper(self.root, "", True)
 
 
 if __name__ == "__main__":
@@ -410,11 +430,16 @@ if __name__ == "__main__":
     tree.insert(33)
     tree.insert(50)
     tree.print_in_order(tree.root)
-    
     print("\n")
-    # Test findKth(i)
-    for i in range(1, 6):
-        kth_node = tree.find_kth(i)
-        print(f"{i}-th smallest key:", kth_node)
-
-    tree.find_interval(8, 30)
+    # 4. Find the biggest, the smallest and the 5th smallest key in the Red-Black Tree
+    print("The biggest key:", tree.find_max(tree.root))
+    print("The smallest key:", tree.find_min(tree.root))
+    print("The 5th smallest key:", tree.find_kth(5))
+    print("\n")
+    # 5. Find and show the values between the interval of the 2 keys (10, 30)
+    tree.find_interval(10, 30)
+    print("\n")
+    
+    # Print the Red-Black Tree
+    print("Red-Black Tree:")
+    tree.print_tree()
