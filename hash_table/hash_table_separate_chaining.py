@@ -1,5 +1,7 @@
-# Q.1: Implement a hash table using separate chaining with colision treatment. The hash table should have the following methods: insert, remove, and find.
-#      Insert the keys 5, 28, 19, 15, 20, 33, 12, 17, and 10 into the hash table. Take the size of the table as 9.
+# Q.1: Implement search, insertion, and deletion algorithms in a hash table 
+# with collision handling using the separate chaining method. 
+# Demonstrate what happens when we insert the keys (5, 28, 19, 15, 20, 33, 12, 17, 10).
+# Assume that the table has a size of 9 and the hash function is h(k) = k mod 9.
 
 class HashTableSeparateChaining:
     class Node:
