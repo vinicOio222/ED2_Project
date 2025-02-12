@@ -2,8 +2,6 @@
 # with collision handling using the separate chaining method. 
 # Demonstrate what happens when we insert the keys (5, 28, 19, 15, 20, 33, 12, 17, 10).
 # Assume that the table has a size of 9 and the hash function is h(k) = k mod 9.
-#
-# Repository Link - https://github.com/vinicOio222/ED2_Project/blob/main/hash_table/hash_table_separate_chaining.py
 
 class HashTableSeparateChaining:
     class Node:
